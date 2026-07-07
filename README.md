@@ -63,20 +63,71 @@ Full walkthrough: [docs/GETTING-STARTED.md](docs/GETTING-STARTED.md).
 
 ## Generate exercises with AI (optional)
 
-`scripts/generate_exercises.py` turns a topic into a lesson with a BYOK
-model (Anthropic / OpenAI / Gemini) and gates every draft through
-`validate_content.py` before writing it into `generated/`:
+`scripts/generate_exercises.py` turns a topic into a full **language**
+lesson with a BYOK model (Anthropic / OpenAI / Gemini) and gates every
+draft through the validator before writing it into the `generated/`
+staging folder. It is language-focused (target and source differ). For a
+**knowledge set** (material written in the same language it teaches,
+source == target), the generator is not the right tool; hand-author from
+[`templates/knowledge/`](templates/knowledge/) instead.
+
+First set your provider key. It is read from the environment (BYOK) and
+never committed:
 
 ```bash
-export ANTHROPIC_API_KEY="sk-..."          # or OPENAI_API_KEY / GEMINI_API_KEY
+export ANTHROPIC_API_KEY="sk-..."   # or OPENAI_API_KEY / GEMINI_API_KEY (Gemini also accepts GOOGLE_API_KEY)
+```
+
+**Recommended (via make; reuses the local environment `make validate` set up):**
+
+```bash
+make generate ARGS="--topic 'Ordering food in a café' --target-lang fr --source-lang en --level A1 --set-id fr-a1"
+```
+
+**Direct (fallback; run it inside the venv from the Quick start):**
+
+```bash
 python3 scripts/generate_exercises.py \
   --topic "Ordering food in a café" \
   --target-lang fr --source-lang en --level A1 --set-id fr-a1
 ```
 
-A draft is a draft until you review it — and for a language you do not
-speak natively, get a native-speaker review before shipping. No validator
-catches an unnatural phrasing.
+### Options
+
+| Flag | Default | Meaning |
+|------|---------|---------|
+| `--topic` | (required) | What the lesson is about. |
+| `--target-lang` | (required) | The language the learner studies (BCP-47, e.g. `fr`). |
+| `--source-lang` | (required) | The explanation language (BCP-47, e.g. `en`). Must differ from the target. |
+| `--level` | `A1` | CEFR level. |
+| `--count` | `6` | Exercises to request. The effective minimum is **5** (a smaller value is treated as 5, and the quality gate requires at least 5). |
+| `--set-id` | `generated-set` | Staging subfolder under `generated/`. |
+| `--provider` | `anthropic` | `anthropic` \| `openai` \| `gemini`. Or set `AL_GEN_PROVIDER`. |
+| `--model` | provider default | Override the model (`claude-sonnet-4-5` / `gpt-4o` / `gemini-2.5-flash`). |
+| `--retries` | `3` | Extra attempts when a draft fails validation before it is discarded. |
+| `--out` | `generated` | Staging directory. |
+
+### What happens, and what you still owe
+
+The script pins the exact lesson-schema JSON in the prompt, parses the
+model's reply, and runs it through `validate_content.py`. If validation
+fails, the errors go back to the model and it retries (up to `--retries`);
+a draft that never validates is discarded, not written. A valid draft
+lands in `generated/<set-id>/`, never directly in `sets/`.
+
+Two gates remain after generation, neither of them automatic:
+
+1. **Engine semantic gate** (cloze `___` markers equal the blanks,
+   `card_ids` integrity, multiselect disjointness). It runs when the
+   pinned `learn-content-engine` is installed, otherwise it is deferred to
+   CI. The plain validator does not cover it.
+2. **Native-speaker review** for a language you do not speak natively. No
+   validator catches an unnatural phrasing or a wrong romanization.
+   Machine-generated, then human-verified, is the only trustworthy order.
+
+When a draft is good, move it from `generated/` into your set under
+`sets/<source>/<target>-<level>/lessons/`, register it in the set
+manifest, and re-run `make validate`.
 
 ## How it stays current
 
