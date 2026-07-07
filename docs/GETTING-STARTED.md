@@ -126,4 +126,21 @@ Two ways to publish:
 - Skim [LESSON-FORMAT.md](LESSON-FORMAT.md) for every field and option; the
   canonical, test-validated reference is the engine's
   [`docs/lesson-format.md`](https://github.com/astrapi69/learn-content-engine/blob/main/docs/lesson-format.md).
-- Generate drafts with AI (optional): `python3 scripts/generate_exercises.py --help`.
+
+## Generate drafts with AI (optional)
+
+Set your provider key, then generate a **language** lesson via the same
+`make` path (it reuses the environment `make validate` created):
+
+```bash
+export ANTHROPIC_API_KEY="sk-..."   # or OPENAI_API_KEY / GEMINI_API_KEY
+make generate ARGS="--topic 'Ordering food in a café' --target-lang fr --source-lang en --level A1 --set-id fr-a1"
+```
+
+Drafts land in `generated/` (never in `sets/`); you review them, then move
+them into a set and re-run `make validate`. Full flag table, the direct
+(non-make) invocation, and the two remaining gates (engine semantics,
+native-speaker review) are in the README's
+[Generate exercises with AI](../README.md#generate-exercises-with-ai-optional)
+section. The generator is language-focused; for a knowledge set
+(source == target) hand-author from [`templates/knowledge/`](../templates/knowledge/).
