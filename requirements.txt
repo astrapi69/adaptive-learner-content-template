@@ -1,0 +1,5 @@
+# Runtime dependencies for the content tooling (validate_content.py,
+# generate_search_index.py). The Makefile installs from this file, so
+# there is one source for the package names.
+pyyaml>=6,<7
+jsonschema>=4,<5

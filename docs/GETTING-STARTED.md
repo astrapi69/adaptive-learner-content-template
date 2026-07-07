@@ -10,8 +10,16 @@ For the full field reference, see [LESSON-FORMAT.md](LESSON-FORMAT.md).
 You need:
 
 - **Git** and a **GitHub account**.
-- **Python 3** with PyYAML (`pip install pyyaml`) to run the validator.
+- **`make`** and **Python 3**. That is all: the first `make validate`
+  creates a local environment and installs the validator's dependencies
+  (`pyyaml`, `jsonschema`) for you. No manual `pip`, no virtualenv.
 - A text editor.
+
+> No `make` (e.g. Windows without WSL)? Either create a virtualenv
+> yourself (`python3 -m venv .venv`, activate it,
+> `pip install -r requirements.txt`), or skip local validation and let the
+> GitHub Actions CI check your commit — it runs the same validator. A bare
+> `pip install` fails on modern systems (PEP 668).
 
 ### Start your own content repository
 
@@ -85,8 +93,11 @@ Then add the **same set block** to the root `manifest.yaml` under `sets:`.
 ## 4. Validate (1 min)
 
 ```bash
-python scripts/validate_content.py
+make validate
 ```
+
+The first run sets up the local environment; later runs reuse it. (Without
+`make`, use the virtualenv or CI fallback from "Before you start".)
 
 You want:
 

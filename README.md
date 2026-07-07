@@ -30,17 +30,34 @@ real content: you replace the example with your own.
 
 ## Quick start
 
+You only need `make` and `python3`. The first `make validate` sets up a
+local environment for you (no manual `pip`, no virtualenv, no Poetry):
+
 ```bash
 # 1. Use this template -> your own repo -> clone it
 git clone https://github.com/<you>/<your-content-repo>.git
 cd <your-content-repo>
 
-# 2. Validate the example (needs only Python 3 + these two deps)
-pip install pyyaml jsonschema
-python3 scripts/validate_content.py        # exit 0 == all sets pass
+# 2. Validate the example set. First run creates .venv and installs deps;
+#    later runs reuse it. Exit 0 == all sets pass.
+make validate
 
-# 3. Replace the example with your own lesson, then re-validate + commit.
+# 3. Replace the example with your own lesson, then re-run make validate + commit.
 ```
+
+No `make` (e.g. Windows without WSL)? Two options: run the validator in a
+virtualenv yourself —
+
+```bash
+python3 -m venv .venv && . .venv/bin/activate     # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+python3 scripts/validate_content.py
+```
+
+— or just commit and let the GitHub Actions CI validate (it runs the same
+checks). Installing the deps globally with a bare `pip install` fails on
+modern Debian/Ubuntu/macOS (PEP 668, "externally-managed-environment");
+the virtualenv above is why.
 
 Full walkthrough: [docs/GETTING-STARTED.md](docs/GETTING-STARTED.md).
 
