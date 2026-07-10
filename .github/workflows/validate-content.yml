@@ -4,8 +4,8 @@
 # so no broken or low-quality lesson set can land. The structural
 # fields are validated against the canonical JSON Schema vendored
 # under schema/ (a mirror of the pinned learn-content-engine
-# release; source-of-truth chain: adaptive-learner Pydantic ->
-# engine -> this mirror), the quality minimums are read from
+# release; source-of-truth chain: engine (canonical) -> this
+# mirror), the quality minimums are read from
 # schema/quality-rules.json, and the content-repo specifics
 # (language pair, directory structure, non-Latin scripts) stay in
 # the validator. Everything here reads only committed files — the
