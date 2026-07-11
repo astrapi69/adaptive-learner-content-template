@@ -91,6 +91,10 @@ content repos in sync.
 export back. Changes flow only through the individual schema-validated
 lesson JSONs under `sets/`. The `exports/` folder is gitignored.
 
+Full usage guide and best practices (incl. the source-chapter workflow):
+[`docs/export-set-usage.md`](docs/export-set-usage.md) (English) /
+[`docs/export-set-usage.de.md`](docs/export-set-usage.de.md) (Deutsch).
+
 ## Generate exercises with AI (optional)
 
 `scripts/generate_exercises.py` turns a topic into a full **language**
