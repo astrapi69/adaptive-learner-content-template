@@ -1,5 +1,8 @@
 # adaptive-learner-content-template
 
+[![content validation](https://github.com/astrapi69/adaptive-learner-content-template/actions/workflows/validate-content.yml/badge.svg)](https://github.com/astrapi69/adaptive-learner-content-template/actions/workflows/validate-content.yml)
+[![engine on npm](https://img.shields.io/npm/v/learn-content-engine?label=engine%20on%20npm)](https://www.npmjs.com/package/learn-content-engine)
+
 A **GitHub template** for building your own [Adaptive Learner](https://github.com/astrapi69/adaptive-learner)
 content: a Git repository of plain lesson files that the app loads
 directly and no vendor can lock away.
@@ -16,8 +19,9 @@ real content: you replace the example with your own.
 - `manifest.yaml` — the root manifest listing your sets (one example set to start).
 - `sets/en/es-a1/` — one minimal, valid example lesson + its set manifest.
 - `schema/` — the pinned [`learn-content-engine`](https://github.com/astrapi69/learn-content-engine)
-  schema mirror + `engine-version.txt` (currently `0.4.0`). This is what
-  your content is validated against — independent of the app.
+  schema mirror; [`engine-version.txt`](schema/engine-version.txt) holds the
+  pinned engine version (currently `0.8.2`) and is the source of truth. This
+  is what your content is validated against — independent of the app.
 - `templates/` — starting-point lessons per domain (language / programming / knowledge).
 - `scripts/validate_content.py` — the local validator.
 - `scripts/generate_exercises.py` — an optional BYOK AI exercise generator.
