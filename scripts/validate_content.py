@@ -249,7 +249,11 @@ def validate_lesson_quality(lesson: dict, source: str, label: str, errors: list[
     # a content-repo quality-layer relaxation only; the canonical
     # schema shape + the schema mirror are untouched.
     mc_only = bool(exercises) and all(
-        e.get("type") == "cloze" and e.get("cloze_mode") in ("select", "multiselect")
+        e.get("type") == "multiple_choice"
+        or (
+            e.get("type") == "cloze"
+            and e.get("cloze_mode") in ("select", "multiselect")
+        )
         for e in exercises
     )
     if len(types) < MIN_TYPES and not mc_only:
