@@ -20,7 +20,7 @@ real content: you replace the example with your own.
 - `sets/en/es-a1/` — one minimal, valid example lesson + its set manifest.
 - `schema/` — the pinned [`learn-content-engine`](https://github.com/astrapi69/learn-content-engine)
   schema mirror; [`engine-version.txt`](schema/engine-version.txt) holds the
-  pinned engine version (currently `0.11.1`) and is the source of truth. This
+  pinned engine version (currently `0.12.0`) and is the source of truth. This
   is what your content is validated against — independent of the app.
 - `templates/` — starting-point lessons per domain (language / programming / knowledge).
 - `scripts/validate_content.py` — the local validator.
