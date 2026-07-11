@@ -15,3 +15,6 @@ node_modules/
 
 # Local Python environment created by `make setup` / `make validate`
 .venv/
+
+# export_set.py snapshots for AI review: read-only, never committed
+exports/
