@@ -106,6 +106,32 @@ Full usage guide and best practices (incl. the source-chapter workflow):
 [`docs/export-set-usage.md`](docs/export-set-usage.md) (English) /
 [`docs/export-set-usage.de.md`](docs/export-set-usage.de.md) (Deutsch).
 
+## Export a graded quiz to PDF (school tests)
+
+`scripts/export_quiz_pdf.py` turns a lesson that carries a graded-quiz
+exercise (an `ext:*-graded-quiz`: a scored question set - points per
+question, optional partial credit on multi-select, an optional
+percentage pass threshold) into two print-ready PDFs:
+
+```bash
+python3 scripts/export_quiz_pdf.py path/to/graded-quiz.json --out-dir out/
+# -> out/<id>-test.pdf      (question paper for students, no answers)
+# -> out/<id>-loesung.pdf   (answer sheet for the teacher)
+```
+
+The test paper shows the questions with blank checkboxes / answer lines
+and the points; the answer sheet shows the correct answers, the points,
+a partial-credit note, and the pass threshold. This is a consumer tool -
+it renders one presentation of a canonical lesson and does not invoke the
+engine, so it is independent of the pinned engine version.
+
+**Caveat (adaptive-learner-content-test#66):** graded-quiz content uses
+the `ext:` extension tier, which the content gate (`make lint`) does not
+yet accept (it validates core-only and refuses ext lessons). Until that
+adoption lands, keep graded-quiz lessons OUTSIDE `sets/` and run the tool
+on them directly (a runnable sample lives in
+[`tests/fixtures/graded-quiz-sample.json`](tests/fixtures/graded-quiz-sample.json)).
+
 ## Generate exercises with AI (optional)
 
 `scripts/generate_exercises.py` turns a topic into a full **language**
