@@ -53,8 +53,7 @@ Before you push, `make lint` runs the same semantic engine gate as CI
 (`Engine conformance`): it installs the engine release pinned in
 `schema/engine-version.txt` into `node_modules/` (gitignored; needs Node.js
 and npm) and checks every lesson and manifest with the engine's rule ids
-(`E-CARD-REF` & co.). `make lint-warnings` additionally prints the engine
-CLI's warnings (`W-*`).
+(`E-CARD-REF` & co.). `make lint-warnings` additionally prints the engine gate's warnings (`W-*`).
 
 No `make` (e.g. Windows without WSL)? Two options: run the validator in a
 virtualenv yourself —
