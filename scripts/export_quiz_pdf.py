@@ -17,10 +17,11 @@ produces the canonical lesson, a tool like this renders one presentation of it
 engine). It is standalone - it does not invoke the engine, so it is independent
 of the repo's pinned engine version.
 
-Note: ``ext:`` graded-quiz CONTENT cannot yet live under ``sets/`` because the
-content gate (``make lint``) validates core-only and refuses ext lessons
-(adaptive-learner-content-test#66). Until that adoption lands, run this tool on
-a graded-quiz lesson kept outside ``sets/`` (see ``tests/fixtures/``).
+Note: the content gate (``make lint``) accepts adopted ``ext:`` types since
+adaptive-learner-content-test#66/#67, so graded-quiz content can now live under
+``sets/`` (adaptive-learner-content-test#69 ships a reference set there). This
+tool reads any graded-quiz lesson JSON - one under ``sets/`` or a lesson kept
+elsewhere (e.g. ``tests/fixtures/``).
 
 The page-building logic is pure (``build_test_lines`` / ``build_answer_lines``)
 and unit-tested; the PDF emission is a thin wrapper that imports ``fpdf2``
