@@ -14,8 +14,10 @@
 #                          der CI-Workflow "Engine conformance"
 #                          (.github/workflows/engine-validate.yml), nur VOR dem
 #                          Push statt danach. Braucht Node.js (>= 20) und npm.
-#     make lint-warnings   Optional: zusätzlich die Warnungen (W-*) der
-#                          Engine-CLI über alle Lektionen ausgeben.
+#     make lint-warnings   Optional: derselbe Engine-Lauf, zusätzlich mit den
+#                          Warnungen (W-*). Nutzt dieselbe Extension-Registry
+#                          wie das Gate, ext: Lektionen werden also validiert
+#                          statt abgewiesen.
 #     make setup           Nur die lokale Umgebung anlegen/aktualisieren.
 #     make generate        KI-Aufgaben generieren (braucht einen API-Schluessel, siehe README).
 #     make audit           Ueberblick ueber deine Inhalte ausgeben.
@@ -41,7 +43,7 @@ ENGINE_STAMP := node_modules/.engine-$(ENGINE_PIN)
 help:
 	@echo "make validate        - Inhalte pruefen (richtet sich beim ersten Mal selbst ein)"
 	@echo "make lint            - Engine-Gate lokal (Selbsttest + alle Lektionen/Manifeste)"
-	@echo "make lint-warnings   - zusätzlich Engine-CLI-Warnungen (W-*) ausgeben"
+	@echo "make lint-warnings   - derselbe Lauf, zusätzlich mit Warnungen (W-*)"
 	@echo "make setup           - lokale Umgebung anlegen"
 	@echo "make generate        - KI-Aufgaben generieren (API-Schluessel noetig; ARGS=\"--topic ...\")"
 	@echo "make audit           - Inhalts-Ueberblick"
@@ -75,7 +77,7 @@ lint: $(ENGINE_STAMP)
 	node scripts/validate_with_engine.mjs .
 
 lint-warnings: $(ENGINE_STAMP)
-	@find sets -path "*/lessons/*.json" -print0 | xargs -0 node_modules/.bin/learn-content-engine lint
+	node scripts/validate_with_engine.mjs --warnings .
 
 # KI-Aufgaben generieren. Argumente durchreichen, z. B.:
 #     make generate ARGS="--topic 'Im Cafe bestellen' --target-lang fr --source-lang de"
