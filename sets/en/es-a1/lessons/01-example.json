@@ -7,10 +7,10 @@
   "domain": "language",
   "estimated_minutes": 8,
   "cards": [
-    { "id": "hola", "front": "hola", "back": "hello", "tags": ["greeting"] },
-    { "id": "gracias", "front": "gracias", "back": "thank you", "tags": ["greeting"] },
-    { "id": "por-favor", "front": "por favor", "back": "please", "tags": ["greeting"] },
-    { "id": "adios", "front": "adiós", "back": "goodbye", "tags": ["greeting"] }
+    { "id": "hola", "stable_id": "card-ms940n64001bv", "front": "hola", "back": "hello", "tags": ["greeting"] },
+    { "id": "gracias", "stable_id": "card-ms940n64002u7", "front": "gracias", "back": "thank you", "tags": ["greeting"] },
+    { "id": "por-favor", "stable_id": "card-ms940n64003ui", "front": "por favor", "back": "please", "tags": ["greeting"] },
+    { "id": "adios", "stable_id": "card-ms940n640048r", "front": "adiós", "back": "goodbye", "tags": ["greeting"] }
   ],
   "steps": [
     {
@@ -25,6 +25,7 @@
       "title": "Choose the word (single multiple-choice)",
       "exercise": {
         "id": "ex-select",
+        "stable_id": "ex-ms940n64005yx",
         "type": "cloze",
         "cloze_mode": "select",
         "prompt": "Choose the correct greeting.",
@@ -40,6 +41,7 @@
       "title": "Type the word",
       "exercise": {
         "id": "ex-type",
+        "stable_id": "ex-ms940n64006b7",
         "type": "cloze",
         "cloze_mode": "type",
         "prompt": "Fill in the blank.",
@@ -54,6 +56,7 @@
       "title": "Free text",
       "exercise": {
         "id": "ex-free",
+        "stable_id": "ex-ms940n64007es",
         "type": "free_text",
         "prompt": "How do you say \"thank you\" in Spanish?",
         "accept": ["gracias", "Gracias"],
@@ -67,6 +70,7 @@
       "title": "Matching",
       "exercise": {
         "id": "ex-match",
+        "stable_id": "ex-ms940n64008mi",
         "type": "matching",
         "prompt": "Match each Spanish word to its English meaning.",
         "pairs": [
@@ -83,6 +87,7 @@
       "title": "Word order",
       "exercise": {
         "id": "ex-tiles",
+        "stable_id": "ex-ms940n64009li",
         "type": "word_tiles",
         "prompt": "Arrange the tiles to say \"thank you very much\".",
         "tiles": ["muchas", "gracias"],
