@@ -1,6 +1,6 @@
 {
   "repo": "astrapi69/adaptive-learner-content-template",
-  "generated": "2026-07-31T16:08:55Z",
+  "generated": "2026-08-01T12:33:26Z",
   "schema_version": "1.0",
   "sets": [
     {
@@ -18,7 +18,7 @@
         "spanish",
         "a1"
       ],
-      "visibility": "visible",
+      "visibility": "hidden",
       "review_status": "authored",
       "ai_validated": false,
       "trust_level": 1,

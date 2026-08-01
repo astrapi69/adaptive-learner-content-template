@@ -49,6 +49,14 @@ make validate
 # 3. Replace the example with your own lesson, then re-run make validate + commit.
 ```
 
+**One line to delete when you go live:** the example set carries
+`visibility: hidden` in `manifest.yaml`. A template is copied, so that
+setting is inherited by your repository, and it keeps the demo out of the
+Adaptive Learner "Discover" list until you replace it. When your own set is
+ready, delete the `visibility: hidden` line (and the comment above it) from
+its manifest entry, otherwise learners will not see your content. Hiding is
+the safe default; showing is the conscious act.
+
 Before you push, `make lint` runs the same semantic engine gate as CI
 (`Engine conformance`): it installs the engine release pinned in
 `schema/engine-version.txt` into `node_modules/` (gitignored; needs Node.js
