@@ -109,3 +109,30 @@ def test_every_index_entry_carries_review_status() -> None:
     assert index["sets"], "index carries no sets"
     for entry in index["sets"]:
         assert entry["review_status"] in ("authored", "generated", "reviewed")
+
+
+def test_shipped_example_sets_are_hidden() -> None:
+    """Every set this TEMPLATE ships is a hidden example (#42).
+
+    A template is copied, not shipped: whatever visibility the example
+    carries is inherited by every repository created from it. A visible
+    example means an author registers their new repo and advertises a
+    demo set as their first content - and does not notice, because the
+    list looks filled. Nothing between here and the learner's Discover
+    list catches it: ``validate_registered_repo.py`` checks clone,
+    commit, schema and repo slug but says nothing about the content, and
+    ``visible`` is the app's normal case. The sibling test repository
+    already ships its demo set hidden; this pins the same for the
+    template.
+
+    Deliberately shipping a visible set means deleting one line here and
+    one in the manifest - a conscious act, which is the point.
+    """
+    index, build_errors = gsi.build_index()
+    assert not build_errors
+    assert index["sets"], "index carries no sets"
+    for entry in index["sets"]:
+        assert entry["visibility"] == "hidden", (
+            f"set {entry['id']!r} is advertised as visible; a repository "
+            "created from this template would inherit that"
+        )

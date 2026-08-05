@@ -24,6 +24,11 @@ sets:
     path: sets/en/es-a1
     version: '1.0.0'
     lesson_count: 1
+    # Beispiel-Set, kein Lerner-Inhalt: Eine Vorlage wird kopiert, also erbt
+    # jedes daraus erzeugte Repository diese Sichtbarkeit. `hidden` haelt das
+    # Beispiel aus dem Entdecken-Bereich der App heraus, bis du es durch
+    # eigene Inhalte ersetzt. Wer bewusst ausliefern will, loescht diese Zeile.
+    visibility: hidden
     tags:
       - example
       - spanish
