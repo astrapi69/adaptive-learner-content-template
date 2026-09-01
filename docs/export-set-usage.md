@@ -44,9 +44,11 @@ make export ARGS="es-a1 --lang en"
 make export ARGS="es-a1 --lang en --format json --out /tmp/review.json"
 
 # Large set: split into parts of at most 8 lessons each for an AI with a
-# limited context window
+# limited context window (the example set here has only 1 lesson, so this
+# always yields a single "part01-of-1"; for a real 23-lesson set this
+# writes exports/<slug>-<lang>-<timestamp>-part01-of-3.yaml, part02-of-3,
+# part03-of-3 - only the part number is zero-padded, not the total)
 make export ARGS="es-a1 --lang en --split-size 8"
-# -> exports/es-a1-en-<timestamp>-part01-of-03.yaml, part02-of-03, part03-of-03
 ```
 
 Without `--out`, the file is written to `exports/` following the

@@ -44,9 +44,12 @@ make export ARGS="es-a1 --lang en"
 make export ARGS="es-a1 --lang en --format json --out /tmp/review.json"
 
 # Grosses Set: in Teile von je hoechstens 8 Lektionen aufteilen, fuer eine
-# KI mit begrenztem Kontextfenster
+# KI mit begrenztem Kontextfenster (das Beispiel-Set hier hat nur 1 Lektion,
+# das ergibt also immer einen einzigen Teil "part01-of-1"; bei einem echten
+# 23-Lektionen-Set schreibt das exports/<slug>-<lang>-<timestamp>-part01-of-3.yaml,
+# part02-of-3, part03-of-3 - nur die Teilnummer wird nullgepolstert, nicht
+# die Gesamtzahl)
 make export ARGS="es-a1 --lang en --split-size 8"
-# -> exports/es-a1-en-<timestamp>-part01-of-03.yaml, part02-of-03, part03-of-03
 ```
 
 Ohne `--out` landet die Datei in `exports/` nach dem Muster
