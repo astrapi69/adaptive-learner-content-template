@@ -142,7 +142,8 @@ def test_update_refreshes_mirror_from_tarball(tmp_path: Path) -> None:
 
 
 def test_mirror_declares_no_app_source() -> None:
-    """The gate's own docs must declare the ENGINE as the mirror source - no reference to the app repo remains in the drift mechanics."""
+    """The gate's own docs must declare the ENGINE as the mirror source -
+    no reference to the app repo remains in the drift mechanics."""
     text = (SCRIPTS_DIR / "check_schema_drift.py").read_text(encoding="utf-8")
     assert "learn-content-engine" in text
     assert "raw.githubusercontent.com" not in text
