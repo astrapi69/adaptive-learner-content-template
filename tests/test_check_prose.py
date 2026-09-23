@@ -197,3 +197,39 @@ def test_whole_word_substitutions_do_not_claim_innocent_compounds():
     # "weiss" sits inside "Hinweisschilder", so it cannot be a stem.
     assert [s for _, s in check_prose.substituted_words("weiss")] == ["wei\u00df"]
     assert check_prose.substituted_words("Hinweisschilder") == []
+
+
+def test_card_code_fields_are_out_of_scope():
+    # A card can carry a snippet and its expected output; both are code.
+    lesson = json.dumps(
+        {
+            "cards": [
+                {
+                    "id": "karte",
+                    "front": "Die Uebung",
+                    "code_snippet": "const laeuft = true;",
+                    "code_language": "javascript",
+                    "expected_output": "laeuft",
+                    "tags": ["uebung"],
+                }
+            ]
+        },
+        ensure_ascii=False,
+    )
+    scanned = " ".join(segment for _, segment in check_prose.prose_segments("lesson.json", lesson))
+    assert "Die Uebung" in scanned
+    for code in ("const laeuft", "expected", "javascript"):
+        assert code not in scanned
+
+
+def test_an_inline_example_is_code_when_it_declares_a_language():
+    prose_example = json.dumps(
+        {"examples": [{"content": "Der Hund laeuft weg.", "title": "Beispiel"}]}, ensure_ascii=False
+    )
+    code_example = json.dumps(
+        {"examples": [{"content": "const laeuft = true;", "language": "javascript"}]}, ensure_ascii=False
+    )
+    prose_scanned = " ".join(s for _, s in check_prose.prose_segments("l.json", prose_example))
+    code_scanned = " ".join(s for _, s in check_prose.prose_segments("l.json", code_example))
+    assert "laeuft weg" in prose_scanned
+    assert "const laeuft" not in code_scanned
