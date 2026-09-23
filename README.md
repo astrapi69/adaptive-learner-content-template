@@ -255,9 +255,26 @@ manifest, and re-run `make validate`.
 Your content is validated against the **pinned** engine version in
 `schema/engine-version.txt` on every push and pull request (structural +
 semantic + drift gates in `.github/workflows/`). A green CI means your
-content is valid for every consumer of that engine release. When the
-engine is bumped, it reaches this repository the same way it reaches the
-rest of the chain: a deliberate pin-bump PR that the drift gate guards.
+content is valid for every consumer of that engine release.
+
+Green does not mean current, and the two gates cover different questions.
+The drift gate compares your schema mirror against the release you pin, so
+it stays green however old that pin is - it is there to catch a hand-edit on
+the mirror. The currency check (`engine-currency.yml`) runs nightly and
+compares the pin against the npm dist-tag this repo follows (`latest` by
+default, set `ENGINE_DIST_TAG` in that workflow if you track another
+channel). When they differ it opens an issue and updates it, and it closes
+that issue once the pin catches up. It never moves the pin: that stays a
+deliberate PR which bumps `schema/engine-version.txt` and refreshes the
+mirror (`python3 scripts/check_schema_drift.py --update`) in the same
+commit.
+
+Moving the pin matters even when nothing in your content changes. New schema
+fields are optional, so old content stays valid - but a new author lint
+applies to lessons you wrote long ago and reaches them only once the pin
+moves. That is why the engine gate also runs `--warnings` in CI as a
+non-blocking step: the findings show up in the job summary instead of
+waiting for someone to run `make lint-warnings` by hand.
 
 Background and prompt recipes: the blog post *Build Your Own Lessons for
 Adaptive Learner*. Licensed MIT (see [LICENSE](LICENSE)); your authored
