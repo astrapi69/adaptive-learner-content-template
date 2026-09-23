@@ -32,7 +32,7 @@ jobs:
           python-version: "3.12"
       - name: Install validator dependencies
         run: pip install "pyyaml>=6,<7" "jsonschema>=4,<5" "pytest>=8,<9" regex "genanki>=0.13,<0.14"
-      - name: Prose gate (em dash, invisible characters)
+      - name: Prose gate (em dash, invisible characters, substituted umlauts)
         # Self-test first: a gate that does not fire on known-bad input is
         # not a gate. schema/ is excluded there - it mirrors the pinned
         # engine release byte for byte.
