@@ -68,7 +68,7 @@ def test_a_broken_gate_is_never_masked():
 
 def test_the_prose_report_ends_with_the_totals_and_names_the_backlog():
     output = (
-        "docs/a.md:3: fuer - German written without its umlaut, correct is für\n"
+        "docs/a.md:3: wort - German written without its umlaut, correct is wört\n"
         "docs/a.md:9: U+2014 EM DASH - EM DASH (write a hyphen or a comma)\n"
         "sets/b.json:1: U+2014 EM DASH - EM DASH (write a hyphen or a comma)\n"
         "\nPROSE GATE: 2 banned character(s) and 1 substituted German word(s) in 5 tracked file(s).\n"
@@ -82,7 +82,7 @@ def test_the_prose_report_ends_with_the_totals_and_names_the_backlog():
 
 
 def test_the_prose_report_never_caps_in_silence():
-    output = "".join(f"f{i}.md:1: fuer - German written without its umlaut\n" for i in range(55))
+    output = "".join(f"f{i}.md:1: wort - German written without its umlaut\n" for i in range(55))
     report = quality_state.prose_report(output, {}, 1)
     assert "and 5 more file(s)" in report
 
