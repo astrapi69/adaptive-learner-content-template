@@ -65,7 +65,14 @@ and npm) and checks every lesson and manifest with the engine's rule ids
 
 `make prose-check` is the third, cheapest gate (Python only, no engine): it
 refuses the em dash and the characters that render as nothing (zero-width
-space, byte-order mark, soft hyphen, directional marks) in every tracked file.
+space, byte-order mark, soft hyphen, directional marks) in every tracked file,
+and it refuses German written with the letter pairs `ae`, `oe`, `ue` and `ss`
+where the word needs ä, ö, ü or ß. The second check works off a stem list of
+German word families, not off the letter pairs themselves: a rule on `ue`
+would fire on `value`, `true` and `queue`. Code is exempt from it - an identifier is spelled by
+whoever wrote it - which means the code-bearing fields of a lesson file
+(`passage`, `sentence`, `tokens`, `code`) and the fenced blocks in a theory
+body.
 The house style writes a hyphen or a comma. Ellipsis, en dash and no-break
 space stay allowed - they are legitimate typography. `schema/` is out of
 scope: it mirrors the pinned engine release byte for byte, so its text belongs

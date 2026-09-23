@@ -1,8 +1,8 @@
-# Makefile fuer dein Adaptive-Learner-Content-Repo.
+# Makefile für dein Adaptive-Learner-Content-Repo.
 #
 # Ein Befehl genuegt zum Loslegen:
 #
-#     make validate        Prueft deine Inhalte (legt beim ersten Mal automatisch
+#     make validate        Prüft deine Inhalte (legt beim ersten Mal automatisch
 #                          eine lokale Python-Umgebung an, du musst nichts installieren).
 #
 # Weitere Ziele:
@@ -19,10 +19,10 @@
 #                          wie das Gate, ext: Lektionen werden also validiert
 #                          statt abgewiesen.
 #     make setup           Nur die lokale Umgebung anlegen/aktualisieren.
-#     make generate        KI-Aufgaben generieren (braucht einen API-Schluessel, siehe README).
-#     make export          Ein Set fuer KI-Review exportieren (ARGS="<slug> [--split-size N] ...").
+#     make generate        KI-Aufgaben generieren (braucht einen API-Schlüssel, siehe README).
+#     make export          Ein Set für KI-Review exportieren (ARGS="<slug> [--split-size N] ...").
 #     make export-anki     Ein Set als Anki-Deck (.apkg) exportieren (ARGS="<slug> [--lang xx] [--out PATH]").
-#     make audit           Ueberblick ueber deine Inhalte ausgeben.
+#     make audit           Überblick über deine Inhalte ausgeben.
 #     make clean           Die lokale Umgebung entfernen.
 #
 # Du brauchst nur "make" und "python3". Kein pip, kein venv, kein Poetry von Hand.
@@ -30,7 +30,7 @@
 # Paketnamen stehen einmal in requirements.txt.
 #
 # Kein "make" auf deinem System (z. B. Windows ohne WSL)? Dann committe deine
-# Aenderungen und lass die GitHub-Actions-CI validieren, sie prueft dasselbe
+# Änderungen und lass die GitHub-Actions-CI validieren, sie prüft dasselbe
 # (validate / engine-validate / schema-drift).
 
 VENV := .venv
@@ -43,15 +43,15 @@ ENGINE_STAMP := node_modules/.engine-$(ENGINE_PIN)
 .PHONY: validate lint lint-warnings prose-check setup generate export export-anki audit clean help
 
 help:
-	@echo "make validate        - Inhalte pruefen (richtet sich beim ersten Mal selbst ein)"
+	@echo "make validate        - Inhalte prüfen (richtet sich beim ersten Mal selbst ein)"
 	@echo "make lint            - Engine-Gate lokal (Selbsttest + alle Lektionen/Manifeste)"
 	@echo "make lint-warnings   - derselbe Lauf, zusätzlich mit Warnungen (W-*)"
 	@echo "make prose-check      - verbotene Zeichen (Em-Dash, unsichtbare) in allen Dateien"
 	@echo "make setup           - lokale Umgebung anlegen"
-	@echo "make generate        - KI-Aufgaben generieren (API-Schluessel noetig; ARGS=\"--topic ...\")"
-	@echo "make export          - Set fuer KI-Review exportieren (ARGS=\"<slug> [--split-size N] ...\")"
+	@echo "make generate        - KI-Aufgaben generieren (API-Schlüssel nötig; ARGS=\"--topic ...\")"
+	@echo "make export          - Set für KI-Review exportieren (ARGS=\"<slug> [--split-size N] ...\")"
 	@echo "make export-anki     - Set als Anki-Deck (.apkg) exportieren (ARGS=\"<slug> [--lang xx] [--out PATH]\")"
-	@echo "make audit           - Inhalts-Ueberblick"
+	@echo "make audit           - Inhalts-Überblick"
 	@echo "make clean           - lokale Umgebung entfernen"
 
 # Die lokale Umgebung. Wird nur angelegt, wenn sie fehlt (Sentinel .venv/.ready).
@@ -62,7 +62,7 @@ $(VENV)/.ready: requirements.txt
 	@$(PIP) install --quiet --upgrade pip
 	@$(PIP) install --quiet -r requirements.txt
 	@touch $(VENV)/.ready
-	@echo ">> Fertig. Kuenftige Laeufe nutzen diese Umgebung direkt."
+	@echo ">> Fertig. Künftige Läufe nutzen diese Umgebung direkt."
 
 setup: $(VENV)/.ready
 
@@ -82,8 +82,8 @@ lint: $(ENGINE_STAMP)
 	node scripts/validate_with_engine.mjs .
 
 # Prosa-Gate: Em-Dash und unsichtbare Zeichen in allen getrackten Dateien.
-# Der Selbsttest laeuft zuerst - ein Gate, das auf bekannt schlechte Eingabe
-# nicht anschlaegt, ist kein Gate. Braucht nur Python 3 (keine Engine, kein
+# Der Selbsttest läuft zuerst - ein Gate, das auf bekannt schlechte Eingabe
+# nicht anschlägt, ist kein Gate. Braucht nur Python 3 (keine Engine, kein
 # venv).
 prose-check:
 	@python3 scripts/check_prose.py --self-test
@@ -94,12 +94,12 @@ lint-warnings: $(ENGINE_STAMP)
 
 # KI-Aufgaben generieren. Argumente durchreichen, z. B.:
 #     make generate ARGS="--topic 'Im Cafe bestellen' --target-lang fr --source-lang de"
-# Braucht einen API-Schluessel in der Umgebung (ANTHROPIC_API_KEY / OPENAI_API_KEY /
+# Braucht einen API-Schlüssel in der Umgebung (ANTHROPIC_API_KEY / OPENAI_API_KEY /
 # GEMINI_API_KEY), siehe README.
 generate: $(VENV)/.ready
 	@$(PY) scripts/generate_exercises.py $(ARGS)
 
-# Ein Set fuer KI-Review exportieren, z. B.:
+# Ein Set für KI-Review exportieren, z. B.:
 #     make export ARGS="<set-slug>"
 #     make export ARGS="<set-slug> --split-size 5"
 export: $(VENV)/.ready

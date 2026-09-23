@@ -7,6 +7,7 @@ and that the mirrored schema/ tree is out of scope by construction.
 """
 from __future__ import annotations
 
+import json
 import importlib.util
 import sys
 from pathlib import Path
@@ -66,3 +67,79 @@ def _all_git_files() -> list[str]:
     return subprocess.run(
         ["git", "ls-files"], capture_output=True, text=True, check=True, cwd=REPO_ROOT
     ).stdout.split()
+
+# --- the umlaut half (ASCII-substituted German) ------------------------------
+# This file is UMLAUT_EXEMPT, so it may spell the misspellings out.
+
+
+def test_flags_a_substituted_german_word():
+    findings = check_prose.substituted_words("Die Abhaengigkeitsliste laeuft")
+    words = [w for w, _ in findings]
+    assert words == ["Abhaengigkeitsliste", "laeuft"]
+
+
+def test_suggests_the_correct_spelling_and_keeps_the_capital():
+    [(word, suggestion)] = check_prose.substituted_words("Abhaengigkeit")
+    assert word == "Abhaengigkeit"
+    assert suggestion == "Abh\u00e4ngigkeit"
+
+
+def test_leaves_english_and_code_words_alone():
+    # The reason this is a stem list and not a pattern on "ue".
+    assert check_prose.substituted_words("value true queue Sequence useState defaultValue") == []
+
+
+def test_leaves_correct_german_alone():
+    correct = " ".join(check_prose.SUBSTITUTED_STEMS.values())
+    assert check_prose.substituted_words(correct) == []
+
+
+def test_skips_a_foreign_lookalike():
+    # Spanish "fueron"/"fuera" would otherwise be claimed by the stem "fuer".
+    assert check_prose.substituted_words("fueron fuera fuerte") == []
+    assert check_prose.substituted_words("dafuer") != []
+
+
+def test_lesson_code_fields_are_out_of_scope():
+    lesson = json.dumps(
+        {
+            "title": "Eine Uebung",
+            "steps": [
+                {
+                    "exercise": {
+                        "sentence": "const laeuft = true;",
+                        "ext_payload": {"passage": "const zurueck = 1;", "prompt": "Was laeuft hier?"},
+                    }
+                }
+            ],
+        },
+        ensure_ascii=False,
+    )
+    scanned = " ".join(segment for _, segment in check_prose.prose_segments("lesson.json", lesson))
+    assert "Uebung" in scanned
+    assert "Was laeuft hier?" in scanned
+    assert "const laeuft" not in scanned
+    assert "zurueck" not in scanned
+
+
+def test_fenced_code_in_a_theory_body_is_out_of_scope():
+    body = "Prosa ueber Effekte\n\n```jsx\nconst laeuft = true;\n```\n\nmehr Prosa"
+    lesson = json.dumps({"steps": [{"type": "theory", "body": body}]}, ensure_ascii=False)
+    scanned = " ".join(segment for _, segment in check_prose.prose_segments("lesson.json", lesson))
+    assert "ueber" in scanned
+    assert "const laeuft" not in scanned
+
+
+def test_the_gate_and_its_test_are_exempt_from_the_umlaut_check():
+    # A list of misspellings has to contain them. The exemption is narrow and
+    # pinned here so it cannot quietly widen.
+    assert check_prose.UMLAUT_EXEMPT == ("scripts/check_prose.py", "tests/test_check_prose.py")
+    for path in check_prose.UMLAUT_EXEMPT:
+        assert check_prose.substituted_words((REPO_ROOT / path).read_text(encoding="utf-8"))
+
+
+def test_every_stem_is_itself_a_substitution():
+    for stem, correct in check_prose.SUBSTITUTED_STEMS.items():
+        assert stem == stem.lower()
+        assert stem != correct
+        assert any(pair in stem for pair in ("ae", "oe", "ue", "ss"))
