@@ -20,6 +20,13 @@ on:
     # Nightly, offset from the drift gate so the two do not report at once.
     - cron: "30 5 * * *"
   workflow_dispatch:
+    inputs:
+      dist_tag:
+        description: >-
+          dist-tag or exact version to compare against, for a one-off check of
+          another channel. Empty uses the tracked ENGINE_DIST_TAG.
+        required: false
+        default: ""
 
 permissions:
   contents: read
@@ -46,44 +53,54 @@ jobs:
 
       - name: Compare the pin against the tracked dist-tag
         id: compare
+        env:
+          # Via env, never interpolated into the script: a dispatch input is
+          # attacker-shaped text and belongs in a variable, not in shell source.
+          DISPATCH_TAG: ${{ inputs.dist_tag }}
         run: |
+          tag="${DISPATCH_TAG:-}"
+          [ -n "$tag" ] || tag="$ENGINE_DIST_TAG"
           pinned="$(tr -d '[:space:]' < schema/engine-version.txt)"
-          published="$(npm view "$ENGINE_PACKAGE@$ENGINE_DIST_TAG" version)"
+          published="$(npm view "$ENGINE_PACKAGE@$tag" version)"
           # An empty answer means the registry call failed or the tag does not
           # exist. That is a broken check, not a current pin - fail loudly
           # instead of reporting "up to date".
           if [ -z "$published" ]; then
-            echo "npm view returned no version for $ENGINE_PACKAGE@$ENGINE_DIST_TAG" >&2
+            echo "npm view returned no version for $ENGINE_PACKAGE@$tag" >&2
             exit 1
           fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
           echo "pinned=$pinned" >> "$GITHUB_OUTPUT"
           echo "published=$published" >> "$GITHUB_OUTPUT"
           if [ "$pinned" = "$published" ]; then
-            echo "behind=false" >> "$GITHUB_OUTPUT"
+            echo "differs=false" >> "$GITHUB_OUTPUT"
           else
-            echo "behind=true" >> "$GITHUB_OUTPUT"
+            echo "differs=true" >> "$GITHUB_OUTPUT"
           fi
           {
             echo "| | version |"
             echo "|---|---|"
             echo "| pinned here | \`$pinned\` |"
-            echo "| \`$ENGINE_DIST_TAG\` on npm | \`$published\` |"
+            echo "| \`$tag\` on npm | \`$published\` |"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Open or update the currency issue
-        if: steps.compare.outputs.behind == 'true'
+        if: steps.compare.outputs.differs == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PINNED: ${{ steps.compare.outputs.pinned }}
           PUBLISHED: ${{ steps.compare.outputs.published }}
+          COMPARED_TAG: ${{ steps.compare.outputs.tag }}
         run: |
           gh label create "$CURRENCY_LABEL" \
-            --description "The engine pin is behind the tracked dist-tag" \
+            --description "The engine pin differs from the tracked dist-tag" \
             --color ededed 2>/dev/null || true
-          title="chore(engine): pin $PINNED is behind $ENGINE_DIST_TAG ($PUBLISHED)"
+          # "differs", not "is behind": the pin can also sit AHEAD of the
+          # tracked channel, which is just as much a mismatch worth naming.
+          title="chore(engine): pin $PINNED differs from $COMPARED_TAG ($PUBLISHED)"
           body="$(cat <<EOF
           Pinned in \`schema/engine-version.txt\`: \`$PINNED\`
-          Published under the tracked dist-tag \`$ENGINE_DIST_TAG\`: \`$PUBLISHED\`
+          Published under \`$COMPARED_TAG\`: \`$PUBLISHED\`
 
           The drift gate stays green throughout: it compares the mirror against
           the release this repo pins, so it proves consistency, never currency.
@@ -114,14 +131,15 @@ jobs:
           fi
 
       - name: Close the currency issue once the pin caught up
-        if: steps.compare.outputs.behind == 'false'
+        if: steps.compare.outputs.differs == 'false'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PINNED: ${{ steps.compare.outputs.pinned }}
+          COMPARED_TAG: ${{ steps.compare.outputs.tag }}
         run: |
           existing="$(gh issue list --label "$CURRENCY_LABEL" --state open \
             --json number --jq '.[0].number' 2>/dev/null || true)"
           if [ -n "$existing" ]; then
             gh issue close "$existing" \
-              --comment "The pin is at \`$PINNED\`, which is what \`$ENGINE_DIST_TAG\` publishes. Closed by the currency check."
+              --comment "The pin is at \`$PINNED\`, which is what \`$COMPARED_TAG\` publishes. Closed by the currency check."
           fi
