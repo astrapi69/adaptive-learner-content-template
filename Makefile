@@ -1,6 +1,6 @@
 # Makefile für dein Adaptive-Learner-Content-Repo.
 #
-# Ein Befehl genuegt zum Loslegen:
+# Ein Befehl genügt zum Loslegen:
 #
 #     make validate        Prüft deine Inhalte (legt beim ersten Mal automatisch
 #                          eine lokale Python-Umgebung an, du musst nichts installieren).

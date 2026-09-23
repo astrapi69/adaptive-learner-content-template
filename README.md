@@ -67,12 +67,21 @@ and npm) and checks every lesson and manifest with the engine's rule ids
 refuses the em dash and the characters that render as nothing (zero-width
 space, byte-order mark, soft hyphen, directional marks) in every tracked file,
 and it refuses German written with the letter pairs `ae`, `oe`, `ue` and `ss`
-where the word needs ä, ö, ü or ß. The second check works off a stem list of
-German word families, not off the letter pairs themselves: a rule on `ue`
-would fire on `value`, `true` and `queue`. Code is exempt from it - an identifier is spelled by
-whoever wrote it - which means the code-bearing fields of a lesson file
-(`passage`, `sentence`, `tokens`, `code`) and the fenced blocks in a theory
-body.
+where the word needs ä, ö, ü or ß. The second check never matches the letter
+pairs themselves (a rule on `ue` would fire on `value`, `true` and `queue`). It
+reads `scripts/umlaut_stems.json`: short German words as whole words, longer
+ones through stems that occur in no correct German word, no English word and
+none of the foreign-language material of the content repositories. The file is
+generated from the Debian dictionaries by `scripts/build_umlaut_stems.py`
+(see its docstring for the run) and committed; it finds 98 percent of the
+German dictionary's umlaut words and flags none of its correct words. The
+`Umlaut data` workflow re-proves both with the dictionaries installed whenever
+the gate or its data changes. A new false alarm on a name or a
+romanisation goes into `FOREIGN_LOOKALIKES` in `scripts/check_prose.py`,
+together with the run that found it. Code is exempt from the check - an
+identifier is spelled by whoever wrote it - which means the code-bearing and
+id fields of a lesson file (`passage`, `sentence`, `tokens`, `code`, `id`,
+`stable_id`, ...) and the fenced blocks in a theory body.
 The house style writes a hyphen or a comma. Ellipsis, en dash and no-break
 space stay allowed - they are legitimate typography. `schema/` is out of
 scope: it mirrors the pinned engine release byte for byte, so its text belongs
