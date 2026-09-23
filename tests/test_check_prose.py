@@ -143,3 +143,17 @@ def test_every_stem_is_itself_a_substitution():
         assert stem == stem.lower()
         assert stem != correct
         assert any(pair in stem for pair in ("ae", "oe", "ue", "ss"))
+
+
+def test_camel_case_is_treated_as_code():
+    # A prompt may name the function it asks about; renaming it in prose would
+    # point the sentence at something that does not exist.
+    assert check_prose.substituted_words("fuegeOptimistischHinzu(text) aufrufen") == []
+    assert check_prose.substituted_words("defaultValue useDeferredValue neuerText") == []
+    # ... while an ordinary German noun still gets caught.
+    assert check_prose.substituted_words("Abhaengigkeitsliste")
+
+
+def test_an_all_caps_word_is_not_mistaken_for_an_identifier():
+    assert check_prose.substituted_words("CSS")[:1] == []
+    assert [w for w, _ in check_prose.substituted_words("PRUEFUNG")] == ["PRUEFUNG"]

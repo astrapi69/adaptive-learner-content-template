@@ -84,6 +84,7 @@ SUBSTITUTED_STEMS = {
     "aufraeum": "aufr\u00e4um",
     "ausfuehr": "ausf\u00fchr",
     "ausgeloest": "ausgel\u00f6st",
+    "ausmass": "ausma\u00df",
     "ausser": "au\u00dfer",
     "behaelt": "beh\u00e4lt",
     "bekaem": "bek\u00e4m",
@@ -98,10 +99,16 @@ SUBSTITUTED_STEMS = {
     "ergaenz": "erg\u00e4nz",
     "erklaer": "erkl\u00e4r",
     "faehig": "f\u00e4hig",
+    "faell": "f\u00e4ll",
     "faellt": "f\u00e4llt",
+    "faeng": "f\u00e4ng",
+    "faerb": "f\u00e4rb",
     "fliess": "flie\u00df",
+    "frueh": "fr\u00fch",
+    "fueg": "f\u00fcg",
     "fuehl": "f\u00fchl",
     "fuehr": "f\u00fchr",
+    "fuell": "f\u00fcll",
     "fuer": "f\u00fcr",
     "fuess": "f\u00fc\u00df",
     "gemaess": "gem\u00e4\u00df",
@@ -109,7 +116,9 @@ SUBSTITUTED_STEMS = {
     "glueck": "gl\u00fcck",
     "groess": "gr\u00f6\u00df",
     "gross": "gro\u00df",
+    "gruend": "gr\u00fcnd",
     "gueltig": "g\u00fcltig",
+    "haelf": "h\u00e4lf",
     "haelt": "h\u00e4lt",
     "haeng": "h\u00e4ng",
     "haeufig": "h\u00e4ufig",
@@ -117,6 +126,7 @@ SUBSTITUTED_STEMS = {
     "hoech": "h\u00f6ch",
     "hoeh": "h\u00f6h",
     "hoer": "h\u00f6r",
+    "itaet": "it\u00e4t",
     "knoepf": "kn\u00f6pf",
     "koenn": "k\u00f6nn",
     "koerper": "k\u00f6rper",
@@ -127,6 +137,7 @@ SUBSTITUTED_STEMS = {
     "laesst": "l\u00e4sst",
     "laeuf": "l\u00e4uf",
     "loes": "l\u00f6s",
+    "luege": "l\u00fcge",
     "maessig": "m\u00e4\u00dfig",
     "massnahm": "ma\u00dfnahm",
     "moecht": "m\u00f6cht",
@@ -152,12 +163,15 @@ SUBSTITUTED_STEMS = {
     "spuer": "sp\u00fcr",
     "staend": "st\u00e4nd",
     "stoess": "st\u00f6\u00df",
+    "stoss": "sto\u00df",
     "stueck": "st\u00fcck",
     "stuend": "st\u00fcnd",
     "taeglich": "t\u00e4glich",
     "traeg": "tr\u00e4g",
+    "traegt": "tr\u00e4gt",
     "ueber": "\u00fcber",
     "uebrig": "\u00fcbrig",
+    "uebrigens": "\u00fcbrigens",
     "uebung": "\u00fcbung",
     "umhuell": "umh\u00fcll",
     "unberuehrt": "unber\u00fchrt",
@@ -226,7 +240,7 @@ def substituted_words(text: str) -> list[tuple[str, str]]:
     findings = []
     for word in WORD.findall(text):
         lowered = word.lower()
-        if lowered in FOREIGN_LOOKALIKES:
+        if lowered in FOREIGN_LOOKALIKES or _is_identifier(word):
             continue
         for stem, correct in SUBSTITUTED_STEMS.items():
             if stem in lowered:
@@ -236,6 +250,19 @@ def substituted_words(text: str) -> list[tuple[str, str]]:
                 findings.append((word, suggestion))
                 break
     return findings
+
+
+def _is_identifier(word: str) -> bool:
+    """True for a camelCase word, which is code even inside a prose field.
+
+    A prompt may name a function it is asking about
+    ("fuegeOptimistischHinzu(text)"), and renaming it in prose would make the
+    text point at something that does not exist. German never capitalises
+    inside a word, so an inner capital next to lower case is a reliable
+    marker. An all-caps word is not one: shouted German is still German.
+    """
+    has_inner_capital = any(character.isupper() for character in word[1:])
+    return has_inner_capital and any(character.islower() for character in word)
 
 
 def prose_segments(path: str, text: str) -> list[tuple[int, str]]:
