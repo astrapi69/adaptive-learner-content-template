@@ -30,14 +30,18 @@ import sys
 import unicodedata
 from pathlib import Path
 
+# Built from code points, never from literals: this file has to pass its own
+# gate, and a table of the real characters would flag the gate itself.
 BANNED = {
-    "—": "EM DASH (write a hyphen or a comma)",
-    "​": "ZERO WIDTH SPACE",
-    "﻿": "BYTE ORDER MARK",
-    "­": "SOFT HYPHEN",
-    "‎": "LEFT-TO-RIGHT MARK",
-    "‏": "RIGHT-TO-LEFT MARK",
+    chr(0x2014): "EM DASH (write a hyphen or a comma)",
+    chr(0x200B): "ZERO WIDTH SPACE",
+    chr(0xFEFF): "BYTE ORDER MARK",
+    chr(0x00AD): "SOFT HYPHEN",
+    chr(0x200E): "LEFT-TO-RIGHT MARK",
+    chr(0x200F): "RIGHT-TO-LEFT MARK",
 }
+
+ALLOWED_SAMPLE = "a clean line - hyphen, comma, no-break space" + chr(0x00A0) + ", ellipsis" + chr(0x2026)
 
 EXCLUDED_PREFIXES = ("schema/",)
 

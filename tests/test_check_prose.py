@@ -20,24 +20,31 @@ sys.modules["check_prose"] = check_prose
 SPEC.loader.exec_module(check_prose)
 
 
+EM_DASH = chr(0x2014)
+ZERO_WIDTH_SPACE = chr(0x200B)
+ELLIPSIS = chr(0x2026)
+EN_DASH = chr(0x2013)
+NO_BREAK_SPACE = chr(0x00A0)
+
+
 def test_flags_an_em_dash():
-    findings = check_prose.findings_in("a comment — with an em dash")
-    assert [f[1] for f in findings] == ["—"]
+    findings = check_prose.findings_in(f"a comment {EM_DASH} with an em dash")
+    assert [f[1] for f in findings] == [EM_DASH]
     assert findings[0][0] == 1
 
 
 def test_flags_an_invisible_character():
-    assert check_prose.findings_in("zero​width")
+    assert check_prose.findings_in(f"zero{ZERO_WIDTH_SPACE}width")
 
 
 def test_leaves_legitimate_typography_alone():
     # Ellipsis, en dash and no-break space are deliberately not banned: a
     # gate that fights legitimate typography gets switched off.
-    assert check_prose.findings_in("one…twelve, 5–10, 12 h") == []
+    assert check_prose.findings_in(f"one{ELLIPSIS}twelve, 5{EN_DASH}10, 12{NO_BREAK_SPACE}h") == []
 
 
 def test_reports_the_line_number():
-    findings = check_prose.findings_in("clean\nstill clean\nnow — here")
+    findings = check_prose.findings_in(f"clean\nstill clean\nnow {EM_DASH} here")
     assert findings[0][0] == 3
 
 
