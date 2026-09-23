@@ -101,6 +101,22 @@ everywhere):
   swap at the same count is reported, not hidden. Record one with
   `python3 scripts/quality_state.py accept RULE <warnings-output> --reason "..."`.
 
+The tooling is shared between the content repositories, and a copy nobody
+compares drifts. `.github/ownership.json` names the owner of every path:
+`template` (author tooling: validation, drift checks, prose gate, exports,
+Makefile), `hub` (search index and federation, owned by
+adaptive-learner-content), `hub-only` (registry and AI review, only the hub
+carries them), `repo` (each repository's own content, manifests, README and
+tests that pin its own sets) or `engine` (the schema mirror, compared by the
+schema drift gate). Every file a repository copies is listed by name. The
+`Ownership` workflow runs `scripts/check_ownership.py` nightly against the
+owners' main branches, with the template's current ownership file, and opens
+or updates one issue while a copy differs, is missing, or a tracked file has
+no row; it closes the issue once everything agrees. A new file without a row
+already fails the test suite of the PR that adds it. A file that belongs to
+one repository only gets a `repo` row here in the template, so it is the
+repository's by decision and not by omission.
+
 No `make` (e.g. Windows without WSL)? Two options: run the validator in a
 virtualenv yourself:
 
