@@ -284,6 +284,13 @@ deliberate PR which bumps `schema/engine-version.txt` and refreshes the
 mirror (`python3 scripts/check_schema_drift.py --update`) in the same
 commit.
 
+A third nightly job (`registry-drift.yml`) compares the `ext:` types this
+repository's engine gate accepts (`scripts/adopted-extensions.mjs`) with the
+ones the app renders. A type the app renders but this gate refuses makes a
+valid lesson unmergeable here; a type the gate accepts but the app refuses lets
+a lesson in that the app will not load. Differences open one issue, which
+closes itself once the lists agree.
+
 Moving the pin matters even when nothing in your content changes. New schema
 fields are optional, so old content stays valid - but a new author lint
 applies to lessons you wrote long ago and reaches them only once the pin
