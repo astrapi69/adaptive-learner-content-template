@@ -25,9 +25,9 @@ sets:
     version: '1.0.0'
     lesson_count: 1
     # Beispiel-Set, kein Lerner-Inhalt: Eine Vorlage wird kopiert, also erbt
-    # jedes daraus erzeugte Repository diese Sichtbarkeit. `hidden` haelt das
+    # jedes daraus erzeugte Repository diese Sichtbarkeit. `hidden` hält das
     # Beispiel aus dem Entdecken-Bereich der App heraus, bis du es durch
-    # eigene Inhalte ersetzt. Wer bewusst ausliefern will, loescht diese Zeile.
+    # eigene Inhalte ersetzt. Wer bewusst ausliefern will, löscht diese Zeile.
     visibility: hidden
     tags:
       - example
