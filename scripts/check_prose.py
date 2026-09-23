@@ -84,6 +84,8 @@ SUBSTITUTED_STEMS = {
     "aufraeum": "aufr\u00e4um",
     "ausfuehr": "ausf\u00fchr",
     "ausgeloest": "ausgel\u00f6st",
+    "ausmass": "ausma\u00df",
+    "aussen": "au\u00dfen",
     "ausser": "au\u00dfer",
     "behaelt": "beh\u00e4lt",
     "bekaem": "bek\u00e4m",
@@ -98,18 +100,28 @@ SUBSTITUTED_STEMS = {
     "ergaenz": "erg\u00e4nz",
     "erklaer": "erkl\u00e4r",
     "faehig": "f\u00e4hig",
+    "faell": "f\u00e4ll",
     "faellt": "f\u00e4llt",
+    "faeng": "f\u00e4ng",
+    "faerb": "f\u00e4rb",
     "fliess": "flie\u00df",
+    "fluess": "fl\u00fcss",
+    "frueh": "fr\u00fch",
+    "fueg": "f\u00fcg",
     "fuehl": "f\u00fchl",
     "fuehr": "f\u00fchr",
+    "fuell": "f\u00fcll",
     "fuer": "f\u00fcr",
     "fuess": "f\u00fc\u00df",
+    "gaeng": "g\u00e4ng",
     "gemaess": "gem\u00e4\u00df",
     "gewoehn": "gew\u00f6hn",
     "glueck": "gl\u00fcck",
     "groess": "gr\u00f6\u00df",
     "gross": "gro\u00df",
+    "gruend": "gr\u00fcnd",
     "gueltig": "g\u00fcltig",
+    "haelf": "h\u00e4lf",
     "haelt": "h\u00e4lt",
     "haeng": "h\u00e4ng",
     "haeufig": "h\u00e4ufig",
@@ -117,6 +129,7 @@ SUBSTITUTED_STEMS = {
     "hoech": "h\u00f6ch",
     "hoeh": "h\u00f6h",
     "hoer": "h\u00f6r",
+    "itaet": "it\u00e4t",
     "knoepf": "kn\u00f6pf",
     "koenn": "k\u00f6nn",
     "koerper": "k\u00f6rper",
@@ -127,6 +140,7 @@ SUBSTITUTED_STEMS = {
     "laesst": "l\u00e4sst",
     "laeuf": "l\u00e4uf",
     "loes": "l\u00f6s",
+    "luege": "l\u00fcge",
     "maessig": "m\u00e4\u00dfig",
     "massnahm": "ma\u00dfnahm",
     "moecht": "m\u00f6cht",
@@ -136,6 +150,7 @@ SUBSTITUTED_STEMS = {
     "naechst": "n\u00e4chst",
     "naeh": "n\u00e4h",
     "noetig": "n\u00f6tig",
+    "nuetz": "n\u00fctz",
     "oberflaech": "oberfl\u00e4ch",
     "oeffn": "\u00f6ffn",
     "prioritaet": "priorit\u00e4t",
@@ -151,13 +166,17 @@ SUBSTITUTED_STEMS = {
     "spaeter": "sp\u00e4ter",
     "spuer": "sp\u00fcr",
     "staend": "st\u00e4nd",
+    "staetig": "st\u00e4tig",
     "stoess": "st\u00f6\u00df",
+    "stoss": "sto\u00df",
     "stueck": "st\u00fcck",
     "stuend": "st\u00fcnd",
     "taeglich": "t\u00e4glich",
     "traeg": "tr\u00e4g",
+    "traegt": "tr\u00e4gt",
     "ueber": "\u00fcber",
     "uebrig": "\u00fcbrig",
+    "uebrigens": "\u00fcbrigens",
     "uebung": "\u00fcbung",
     "umhuell": "umh\u00fcll",
     "unberuehrt": "unber\u00fchrt",
@@ -167,12 +186,25 @@ SUBSTITUTED_STEMS = {
     "waehl": "w\u00e4hl",
     "waehr": "w\u00e4hr",
     "waere": "w\u00e4re",
+    "waerts": "w\u00e4rts",
     "wuensch": "w\u00fcnsch",
     "wuerd": "w\u00fcrd",
     "zaehl": "z\u00e4hl",
     "zuegig": "z\u00fcgig",
     "zusaetzlich": "zus\u00e4tzlich",
     "zustaendig": "zust\u00e4ndig",
+}
+
+# Words a stem cannot reach without claiming an innocent one: "weiss" lives
+# inside "Hinweisschilder", so it is matched as a whole word instead. Swiss
+# spelling in a German set is the case this exists for.
+WHOLE_WORD_SUBSTITUTIONS = {
+    "weiss": "wei\u00df",
+    "weisst": "wei\u00dft",
+    "heisse": "hei\u00dfe",
+    "grosse": "gro\u00dfe",
+    "grosser": "gro\u00dfer",
+    "grosses": "gro\u00dfes",
 }
 
 # Words from the languages this content teaches that a German stem would
@@ -190,8 +222,23 @@ FOREIGN_LOOKALIKES = {
     "fuerzas",
 }
 
-# Fields of a lesson file that carry CODE rather than prose.
-CODE_KEYS = {"passage", "sentence", "tokens", "code", "stable_id"}
+# Fields of a lesson file that carry CODE rather than prose. The id fields
+# belong here for the same reason as an identifier in a sentence: an id is a
+# machine key, the app and the manifest look it up verbatim, and "correcting"
+# it silently renames the thing. It also happens to be how a slug stops being
+# ASCII without anyone noticing.
+CODE_KEYS = {
+    "passage",
+    "sentence",
+    "tokens",
+    "code",
+    "stable_id",
+    "id",
+    "theory_ref",
+    "card_ids",
+    "review_lesson_id",
+    "variation_of",
+}
 
 # This gate and its test hold the misspellings on purpose.
 UMLAUT_EXEMPT = ("scripts/check_prose.py", "tests/test_check_prose.py")
@@ -226,16 +273,41 @@ def substituted_words(text: str) -> list[tuple[str, str]]:
     findings = []
     for word in WORD.findall(text):
         lowered = word.lower()
-        if lowered in FOREIGN_LOOKALIKES:
+        if lowered in FOREIGN_LOOKALIKES or _is_identifier(word):
             continue
+        if lowered in WHOLE_WORD_SUBSTITUTIONS:
+            suggestion = WHOLE_WORD_SUBSTITUTIONS[lowered]
+            if word[:1].isupper():
+                suggestion = suggestion[:1].upper() + suggestion[1:]
+            findings.append((word, suggestion))
+            continue
+        suggestion = lowered
         for stem, correct in SUBSTITUTED_STEMS.items():
-            if stem in lowered:
-                suggestion = lowered.replace(stem, correct)
-                if word[:1].isupper():
-                    suggestion = suggestion[:1].upper() + suggestion[1:]
-                findings.append((word, suggestion))
-                break
+            # Every matching stem, not just the first: "zurueckhaelt" carries
+            # two ("rueck" and "haelt"), and stopping at one leaves half a
+            # correction behind - which is exactly how two words survived a
+            # full pass over a real set.
+            if stem in suggestion:
+                suggestion = suggestion.replace(stem, correct)
+        if suggestion == lowered:
+            continue
+        if word[:1].isupper():
+            suggestion = suggestion[:1].upper() + suggestion[1:]
+        findings.append((word, suggestion))
     return findings
+
+
+def _is_identifier(word: str) -> bool:
+    """True for a camelCase word, which is code even inside a prose field.
+
+    A prompt may name a function it is asking about
+    ("fuegeOptimistischHinzu(text)"), and renaming it in prose would make the
+    text point at something that does not exist. German never capitalises
+    inside a word, so an inner capital next to lower case is a reliable
+    marker. An all-caps word is not one: shouted German is still German.
+    """
+    has_inner_capital = any(character.isupper() for character in word[1:])
+    return has_inner_capital and any(character.islower() for character in word)
 
 
 def prose_segments(path: str, text: str) -> list[tuple[int, str]]:

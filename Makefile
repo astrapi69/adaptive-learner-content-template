@@ -117,6 +117,6 @@ audit: $(VENV)/.ready
 clean:
 	rm -rf $(VENV)
 
-stable-ids: $(ENGINE_STAMP) ## Stabilitaets- und Abdeckungs-Gate (beide mitgeliefert)
+stable-ids: $(ENGINE_STAMP) ## Stabilitäts- und Abdeckungs-Gate (beide mitgeliefert)
 	npx --no-install learn-content-engine check-stable-ids --base origin/main
 	npx --no-install learn-content-engine check-stable-id-coverage

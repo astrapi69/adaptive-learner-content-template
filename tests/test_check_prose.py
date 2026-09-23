@@ -143,3 +143,57 @@ def test_every_stem_is_itself_a_substitution():
         assert stem == stem.lower()
         assert stem != correct
         assert any(pair in stem for pair in ("ae", "oe", "ue", "ss"))
+
+
+def test_camel_case_is_treated_as_code():
+    # A prompt may name the function it asks about; renaming it in prose would
+    # point the sentence at something that does not exist.
+    assert check_prose.substituted_words("fuegeOptimistischHinzu(text) aufrufen") == []
+    assert check_prose.substituted_words("defaultValue useDeferredValue neuerText") == []
+    # ... while an ordinary German noun still gets caught.
+    assert check_prose.substituted_words("Abhaengigkeitsliste")
+
+
+def test_an_all_caps_word_is_not_mistaken_for_an_identifier():
+    assert check_prose.substituted_words("CSS")[:1] == []
+    assert [w for w, _ in check_prose.substituted_words("PRUEFUNG")] == ["PRUEFUNG"]
+
+
+def test_applies_every_matching_stem_in_one_word():
+    # "zurueckhaelt" carries two stems; stopping at the first leaves half a
+    # correction behind.
+    [(word, suggestion)] = check_prose.substituted_words("zurueckhaelt")
+    assert word == "zurueckhaelt"
+    assert suggestion == "zur\u00fcckh\u00e4lt"
+    [(_, gr)] = check_prose.substituted_words("Groessenaendern")
+    assert gr == "Gr\u00f6\u00dfen\u00e4ndern"
+
+
+def test_id_fields_are_out_of_scope():
+    # An id is a machine key: the manifest and the app look it up verbatim, so
+    # "correcting" it renames the thing. It is also how a slug quietly stops
+    # being ASCII.
+    lesson = json.dumps(
+        {
+            "id": "ex-drei-rueckgaben",
+            "steps": [
+                {
+                    "id": "ex-zustaendigkeiten",
+                    "theory_ref": "buendelung",
+                    "title": "Die Zustaendigkeiten",
+                    "exercise": {"id": "ex-zustaendigkeiten", "card_ids": ["karte-rueckfall"]},
+                }
+            ],
+        },
+        ensure_ascii=False,
+    )
+    scanned = " ".join(segment for _, segment in check_prose.prose_segments("lesson.json", lesson))
+    assert "Die Zustaendigkeiten" in scanned
+    for machine_key in ("ex-drei-rueckgaben", "ex-zustaendigkeiten", "buendelung", "karte-rueckfall"):
+        assert machine_key not in scanned
+
+
+def test_whole_word_substitutions_do_not_claim_innocent_compounds():
+    # "weiss" sits inside "Hinweisschilder", so it cannot be a stem.
+    assert [s for _, s in check_prose.substituted_words("weiss")] == ["wei\u00df"]
+    assert check_prose.substituted_words("Hinweisschilder") == []
