@@ -228,17 +228,33 @@ FOREIGN_LOOKALIKES = {
 # it silently renames the thing. It also happens to be how a slug stops being
 # ASCII without anyone noticing.
 CODE_KEYS = {
+    # code the learner reads
     "passage",
     "sentence",
     "tokens",
     "code",
+    "code_snippet",
+    "code_language",
+    "expected_output",
+    # machine keys: an id is looked up verbatim, so correcting its spelling
+    # renames the thing it names - and it is how a slug quietly stops being
+    # ASCII.
     "stable_id",
     "id",
     "theory_ref",
     "card_ids",
     "review_lesson_id",
     "variation_of",
+    "tags",
+    # paths, URLs and enum-ish values: not sentences
+    "example_url",
+    "audio",
+    "image",
+    "src",
+    "language",
+    "media_type",
 }
+
 
 # This gate and its test hold the misspellings on purpose.
 UMLAUT_EXEMPT = ("scripts/check_prose.py", "tests/test_check_prose.py")
@@ -339,8 +355,12 @@ def prose_segments(path: str, text: str) -> list[tuple[int, str]]:
 
 def _walk_json(node, in_code: bool, out: list[str]) -> None:
     if isinstance(node, dict):
+        # An inline example is prose when it is a sample sentence and code when
+        # it declares a language; the field name alone cannot tell them apart.
+        example_is_code = bool(node.get("language")) and "content" in node
         for key, value in node.items():
-            _walk_json(value, in_code or key in CODE_KEYS, out)
+            child_is_code = in_code or key in CODE_KEYS or (example_is_code and key == "content")
+            _walk_json(value, child_is_code, out)
     elif isinstance(node, list):
         for value in node:
             _walk_json(value, in_code, out)
