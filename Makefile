@@ -46,7 +46,7 @@ help:
 	@echo "make validate        - Inhalte prüfen (richtet sich beim ersten Mal selbst ein)"
 	@echo "make lint            - Engine-Gate lokal (Selbsttest + alle Lektionen/Manifeste)"
 	@echo "make lint-warnings   - derselbe Lauf, zusätzlich mit Warnungen (W-*)"
-	@echo "make prose-check      - verbotene Zeichen (Em-Dash, unsichtbare) in allen Dateien"
+	@echo "make prose-check      - Em-Dash, unsichtbare Zeichen, fehlende Umlaute in allen Dateien"
 	@echo "make setup           - lokale Umgebung anlegen"
 	@echo "make generate        - KI-Aufgaben generieren (API-Schlüssel nötig; ARGS=\"--topic ...\")"
 	@echo "make export          - Set für KI-Review exportieren (ARGS=\"<slug> [--split-size N] ...\")"
@@ -81,7 +81,8 @@ lint: $(ENGINE_STAMP)
 	node scripts/validate_with_engine.mjs --self-test
 	node scripts/validate_with_engine.mjs .
 
-# Prosa-Gate: Em-Dash und unsichtbare Zeichen in allen getrackten Dateien.
+# Prosa-Gate: Em-Dash, unsichtbare Zeichen und deutsche Wörter ohne ihre
+# Umlaute (ae/oe/ue/ss statt ä/ö/ü/ß) in allen getrackten Dateien.
 # Der Selbsttest läuft zuerst - ein Gate, das auf bekannt schlechte Eingabe
 # nicht anschlägt, ist kein Gate. Braucht nur Python 3 (keine Engine, kein
 # venv).
