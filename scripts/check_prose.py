@@ -105,6 +105,7 @@ SUBSTITUTED_STEMS = {
     "faeng": "f\u00e4ng",
     "faerb": "f\u00e4rb",
     "fliess": "flie\u00df",
+    "fluess": "fl\u00fcss",
     "frueh": "fr\u00fch",
     "fueg": "f\u00fcg",
     "fuehl": "f\u00fchl",
@@ -112,6 +113,7 @@ SUBSTITUTED_STEMS = {
     "fuell": "f\u00fcll",
     "fuer": "f\u00fcr",
     "fuess": "f\u00fc\u00df",
+    "gaeng": "g\u00e4ng",
     "gemaess": "gem\u00e4\u00df",
     "gewoehn": "gew\u00f6hn",
     "glueck": "gl\u00fcck",
@@ -148,6 +150,7 @@ SUBSTITUTED_STEMS = {
     "naechst": "n\u00e4chst",
     "naeh": "n\u00e4h",
     "noetig": "n\u00f6tig",
+    "nuetz": "n\u00fctz",
     "oberflaech": "oberfl\u00e4ch",
     "oeffn": "\u00f6ffn",
     "prioritaet": "priorit\u00e4t",
@@ -163,6 +166,7 @@ SUBSTITUTED_STEMS = {
     "spaeter": "sp\u00e4ter",
     "spuer": "sp\u00fcr",
     "staend": "st\u00e4nd",
+    "staetig": "st\u00e4tig",
     "stoess": "st\u00f6\u00df",
     "stoss": "sto\u00df",
     "stueck": "st\u00fcck",
@@ -189,6 +193,18 @@ SUBSTITUTED_STEMS = {
     "zuegig": "z\u00fcgig",
     "zusaetzlich": "zus\u00e4tzlich",
     "zustaendig": "zust\u00e4ndig",
+}
+
+# Words a stem cannot reach without claiming an innocent one: "weiss" lives
+# inside "Hinweisschilder", so it is matched as a whole word instead. Swiss
+# spelling in a German set is the case this exists for.
+WHOLE_WORD_SUBSTITUTIONS = {
+    "weiss": "wei\u00df",
+    "weisst": "wei\u00dft",
+    "heisse": "hei\u00dfe",
+    "grosse": "gro\u00dfe",
+    "grosser": "gro\u00dfer",
+    "grosses": "gro\u00dfes",
 }
 
 # Words from the languages this content teaches that a German stem would
@@ -258,6 +274,12 @@ def substituted_words(text: str) -> list[tuple[str, str]]:
     for word in WORD.findall(text):
         lowered = word.lower()
         if lowered in FOREIGN_LOOKALIKES or _is_identifier(word):
+            continue
+        if lowered in WHOLE_WORD_SUBSTITUTIONS:
+            suggestion = WHOLE_WORD_SUBSTITUTIONS[lowered]
+            if word[:1].isupper():
+                suggestion = suggestion[:1].upper() + suggestion[1:]
+            findings.append((word, suggestion))
             continue
         suggestion = lowered
         for stem, correct in SUBSTITUTED_STEMS.items():

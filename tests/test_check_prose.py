@@ -191,3 +191,9 @@ def test_id_fields_are_out_of_scope():
     assert "Die Zustaendigkeiten" in scanned
     for machine_key in ("ex-drei-rueckgaben", "ex-zustaendigkeiten", "buendelung", "karte-rueckfall"):
         assert machine_key not in scanned
+
+
+def test_whole_word_substitutions_do_not_claim_innocent_compounds():
+    # "weiss" sits inside "Hinweisschilder", so it cannot be a stem.
+    assert [s for _, s in check_prose.substituted_words("weiss")] == ["wei\u00df"]
+    assert check_prose.substituted_words("Hinweisschilder") == []
