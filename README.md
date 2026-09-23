@@ -63,6 +63,14 @@ Before you push, `make lint` runs the same semantic engine gate as CI
 and npm) and checks every lesson and manifest with the engine's rule ids
 (`E-CARD-REF` & co.). `make lint-warnings` additionally prints the engine gate's warnings (`W-*`).
 
+`make prose-check` is the third, cheapest gate (Python only, no engine): it
+refuses the em dash and the characters that render as nothing (zero-width
+space, byte-order mark, soft hyphen, directional marks) in every tracked file.
+The house style writes a hyphen or a comma. Ellipsis, en dash and no-break
+space stay allowed - they are legitimate typography. `schema/` is out of
+scope: it mirrors the pinned engine release byte for byte, so its text belongs
+to the engine. CI runs the same gate, self-test first.
+
 No `make` (e.g. Windows without WSL)? Two options: run the validator in a
 virtualenv yourself:
 
