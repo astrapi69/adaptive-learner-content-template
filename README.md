@@ -78,6 +78,20 @@ space stay allowed - they are legitimate typography. `schema/` is out of
 scope: it mirrors the pinned engine release byte for byte, so its text belongs
 to the engine. CI runs the same gate, self-test first.
 
+Two quality decisions differ from repository to repository and live in
+`.github/quality-state.json`, not in the workflows (which stay identical
+everywhere):
+
+- `prose_gate.blocking: false` with `since` and `reason` keeps the prose gate
+  non-blocking while a backlog from before the gate is worked off. Absent
+  means blocking.
+- `accepted_warnings` records author warnings the repository decided to keep,
+  with the date, the reason, an optional link to the decision, and the
+  `stable_id`s of the elements. The warning summary shows the decision next to
+  the number and compares the recorded elements with the current ones, so a
+  swap at the same count is reported, not hidden. Record one with
+  `python3 scripts/quality_state.py accept RULE <warnings-output> --reason "..."`.
+
 No `make` (e.g. Windows without WSL)? Two options: run the validator in a
 virtualenv yourself:
 
