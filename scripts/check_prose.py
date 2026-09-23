@@ -242,13 +242,19 @@ def substituted_words(text: str) -> list[tuple[str, str]]:
         lowered = word.lower()
         if lowered in FOREIGN_LOOKALIKES or _is_identifier(word):
             continue
+        suggestion = lowered
         for stem, correct in SUBSTITUTED_STEMS.items():
-            if stem in lowered:
-                suggestion = lowered.replace(stem, correct)
-                if word[:1].isupper():
-                    suggestion = suggestion[:1].upper() + suggestion[1:]
-                findings.append((word, suggestion))
-                break
+            # Every matching stem, not just the first: "zurueckhaelt" carries
+            # two ("rueck" and "haelt"), and stopping at one leaves half a
+            # correction behind - which is exactly how two words survived a
+            # full pass over a real set.
+            if stem in suggestion:
+                suggestion = suggestion.replace(stem, correct)
+        if suggestion == lowered:
+            continue
+        if word[:1].isupper():
+            suggestion = suggestion[:1].upper() + suggestion[1:]
+        findings.append((word, suggestion))
     return findings
 
 

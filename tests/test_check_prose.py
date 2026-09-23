@@ -157,3 +157,13 @@ def test_camel_case_is_treated_as_code():
 def test_an_all_caps_word_is_not_mistaken_for_an_identifier():
     assert check_prose.substituted_words("CSS")[:1] == []
     assert [w for w, _ in check_prose.substituted_words("PRUEFUNG")] == ["PRUEFUNG"]
+
+
+def test_applies_every_matching_stem_in_one_word():
+    # "zurueckhaelt" carries two stems; stopping at the first leaves half a
+    # correction behind.
+    [(word, suggestion)] = check_prose.substituted_words("zurueckhaelt")
+    assert word == "zurueckhaelt"
+    assert suggestion == "zur\u00fcckh\u00e4lt"
+    [(_, gr)] = check_prose.substituted_words("Groessenaendern")
+    assert gr == "Gr\u00f6\u00dfen\u00e4ndern"
