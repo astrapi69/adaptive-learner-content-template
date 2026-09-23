@@ -204,8 +204,23 @@ FOREIGN_LOOKALIKES = {
     "fuerzas",
 }
 
-# Fields of a lesson file that carry CODE rather than prose.
-CODE_KEYS = {"passage", "sentence", "tokens", "code", "stable_id"}
+# Fields of a lesson file that carry CODE rather than prose. The id fields
+# belong here for the same reason as an identifier in a sentence: an id is a
+# machine key, the app and the manifest look it up verbatim, and "correcting"
+# it silently renames the thing. It also happens to be how a slug stops being
+# ASCII without anyone noticing.
+CODE_KEYS = {
+    "passage",
+    "sentence",
+    "tokens",
+    "code",
+    "stable_id",
+    "id",
+    "theory_ref",
+    "card_ids",
+    "review_lesson_id",
+    "variation_of",
+}
 
 # This gate and its test hold the misspellings on purpose.
 UMLAUT_EXEMPT = ("scripts/check_prose.py", "tests/test_check_prose.py")

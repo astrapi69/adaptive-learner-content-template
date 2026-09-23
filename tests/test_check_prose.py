@@ -167,3 +167,27 @@ def test_applies_every_matching_stem_in_one_word():
     assert suggestion == "zur\u00fcckh\u00e4lt"
     [(_, gr)] = check_prose.substituted_words("Groessenaendern")
     assert gr == "Gr\u00f6\u00dfen\u00e4ndern"
+
+
+def test_id_fields_are_out_of_scope():
+    # An id is a machine key: the manifest and the app look it up verbatim, so
+    # "correcting" it renames the thing. It is also how a slug quietly stops
+    # being ASCII.
+    lesson = json.dumps(
+        {
+            "id": "ex-drei-rueckgaben",
+            "steps": [
+                {
+                    "id": "ex-zustaendigkeiten",
+                    "theory_ref": "buendelung",
+                    "title": "Die Zustaendigkeiten",
+                    "exercise": {"id": "ex-zustaendigkeiten", "card_ids": ["karte-rueckfall"]},
+                }
+            ],
+        },
+        ensure_ascii=False,
+    )
+    scanned = " ".join(segment for _, segment in check_prose.prose_segments("lesson.json", lesson))
+    assert "Die Zustaendigkeiten" in scanned
+    for machine_key in ("ex-drei-rueckgaben", "ex-zustaendigkeiten", "buendelung", "karte-rueckfall"):
+        assert machine_key not in scanned
