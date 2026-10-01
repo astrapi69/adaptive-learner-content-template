@@ -10,9 +10,12 @@ For the full field reference, see [LESSON-FORMAT.md](LESSON-FORMAT.md).
 You need:
 
 - **Git** and a **GitHub account**.
-- **`make`** and **Python 3**. That is all: the first `make validate`
-  creates a local environment and installs the validator's dependencies
-  (`pyyaml`, `jsonschema`) for you. No manual `pip`, no virtualenv.
+- **`make`** and **Python 3**. The first `make validate` creates a local
+  environment and installs the validator's dependencies
+  (`requirements.txt`) for you. No manual `pip`, no virtualenv.
+- **Node.js and npm** for the engine gate (`make lint`) and the AI
+  generator. The first run installs the engine release this repository
+  pins.
 - A text editor.
 
 > No `make` (e.g. Windows without WSL)? Either create a virtualenv
@@ -115,7 +118,8 @@ that does not match its language and level). Fix and re-run.
 
 **Before you push**, also run the engine gate locally: the same semantic
 rules (stable rule ids such as `E-CARD-REF`, cloze markers, multiple-choice
-rules) that CI enforces in the `Engine conformance` workflow:
+rules) and quality minimums that CI enforces in the `Engine conformance`
+workflow:
 
 ```bash
 make lint
@@ -159,8 +163,8 @@ make generate ARGS="--topic 'Ordering food in a café' --target-lang fr --source
 
 Drafts land in `generated/` (never in `sets/`); you review them, then move
 them into a set and re-run `make validate`. Full flag table, the direct
-(non-make) invocation, and the two remaining gates (engine semantics,
-native-speaker review) are in the README's
+(non-make) invocation, and the gate that remains (native-speaker review)
+are in the README's
 [Generate exercises with AI](../README.md#generate-exercises-with-ai-optional)
 section. The generator is language-focused; for a knowledge set
 (source == target) hand-author from [`templates/knowledge/`](../templates/knowledge/).
