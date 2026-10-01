@@ -76,12 +76,19 @@ generated from the Debian dictionaries by `scripts/build_umlaut_stems.py`
 (see its docstring for the run) and committed; it finds 98 percent of the
 German dictionary's umlaut words and flags none of its correct words. The
 `Umlaut data` workflow re-proves both with the dictionaries installed whenever
-the gate or its data changes. A new false alarm on a name or a
-romanisation goes into `FOREIGN_LOOKALIKES` in `scripts/check_prose.py`,
+the gate or its data changes. A new false alarm on a foreign word or a
+romanisation goes into `FOREIGN_LOOKALIKES` in `scripts/check_prose.py`, a
+surname that is also a German word (Weiss, Gross) into `PROPER_NAMES`, each
 together with the run that found it. Code is exempt from the check - an
 identifier is spelled by whoever wrote it - which means the code-bearing and
 id fields of a lesson file (`passage`, `sentence`, `tokens`, `code`, `id`,
-`stable_id`, ...) and the fenced blocks in a theory body.
+`stable_id`, ...), the fenced blocks in a theory body, a string ending in a
+semicolon, and code syntax in a plain-text field (`d['key']`, `n++`, a tag, a
+JSX expression, a method call). Machine values and typing variants are not
+prose either: the `tags` of a lesson or a YAML file, and every `accept` entry
+after the first (the app shows `accept[0]` as the solution; the others catch
+what a learner types, an ASCII spelling for a keyboard without umlauts among
+them).
 The house style writes a hyphen or a comma. Ellipsis, en dash and no-break
 space stay allowed - they are legitimate typography. `schema/` is out of
 scope: it mirrors the pinned engine release byte for byte, so its text belongs
