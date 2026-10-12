@@ -7,7 +7,7 @@ name: Example set, Spanish A1
 description: A one-lesson example set. Replace it with your own content.
 sets:
   - id: example-set
-    title: Spanish A1 (probe)
+    title: Spanish A1 (example)
     title_native: Español A1 (ejemplo)
     target_language: es
     source_language: en
