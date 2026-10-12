@@ -107,6 +107,45 @@ everywhere):
   the number and compares the recorded elements with the current ones, so a
   swap at the same count is reported, not hidden. Record one with
   `python3 scripts/quality_state.py accept RULE <warnings-output> --reason "..."`.
+  Only warnings can be accepted: an error blocks the gate, and `accept`
+  refuses one.
+
+**When the engine raises an accepted warning to an error.** A rule's ID
+carries its tier (`W-` warns, `E-` blocks), so raising a rule renames it, and
+the engine records every rename in `RENAMED_RULE_IDS`. With `--warnings` the
+runner prints that table, following each old ID with `currentRuleId`, so a
+record kept under the old name is still recognized: the summary follows it to
+the new ID and reports the raise instead of calling the findings resolved.
+The record cannot carry the acceptance over, since the findings now block.
+Example, the raise in engine 0.38.0, with this record:
+
+```json
+{
+  "rule": "W-MANIFEST-ENTRY-MISMATCH",
+  "since": "2026-09-23",
+  "reason": "the root text is shorter on purpose",
+  "ids": ["sets/de/x/manifest.yaml#/sets/0/description"]
+}
+```
+
+`make lint-warnings` after the pin bump prints:
+
+```text
+RENAMED W-MANIFEST-ENTRY-MISMATCH -> E-MANIFEST-ENTRY-MISMATCH
+
+✗ sets/de/x/manifest.yaml
+   [E-MANIFEST-ENTRY-MISMATCH] /sets/0/description set 'x': 'description' is "Root text" in the root manifest but "Set text" in the set manifest; the two must be identical
+```
+
+and the warning summary reads:
+
+| rule | count | accepted | status |
+|---|---|---|---|
+| `W-MANIFEST-ENTRY-MISMATCH` | 1 | 1 since 2026-09-23 | raised to `E-MANIFEST-ENTRY-MISMATCH`: an error blocks the gate, the acceptance no longer applies (1 finding) |
+
+Fix the finding (here: make the two descriptions identical) and remove the
+record; once nothing is left the status says "no findings left, remove the
+record". `tests/test_quality_state.py` runs this example.
 
 The tooling is shared between the content repositories, and a copy nobody
 compares drifts. `.github/ownership.json` names the owner of every path:
