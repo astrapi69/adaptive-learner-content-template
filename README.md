@@ -81,8 +81,10 @@ romanisation goes into `FOREIGN_LOOKALIKES` in `scripts/check_prose.py`, a
 surname that is also a German word (Weiss, Gross) into `PROPER_NAMES`, each
 together with the run that found it. Code is exempt from the check - an
 identifier is spelled by whoever wrote it - which means the code-bearing and
-id fields of a lesson file (`passage`, `sentence`, `tokens`, `code`, `id`,
-`stable_id`, ...), the fenced blocks in a theory body, a string ending in a
+id fields of a lesson file (`passage`, `tokens`, `code`, `id`, `stable_id`,
+..., and a cloze `sentence` in a lesson with `domain: programming`; in any
+other lesson, also one without a domain, a cloze sentence is prose and gets
+checked), the fenced blocks in a theory body, a string ending in a
 semicolon, and code syntax in a plain-text field (`d['key']`, `n++`, a tag, a
 JSX expression, a method call). Machine values and typing variants are not
 prose either: the `tags` of a lesson or a YAML file, and every `accept` entry
